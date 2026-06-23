@@ -1,11 +1,14 @@
 classdef SignalGenerator < handle
+    %% ===================================
+    %% Test Signal Generation For THE ADC 
+    %% ===================================
     properties 
         Parameters
     end
     methods
-        %% ===================================
-        %% Test Signal Generation For THE ADC 
-        %% ===================================
+        %% =====================================
+        %% Signal Generator Instance Constructor 
+        %% =====================================
         function obj = SignalGenerator(P)
             obj.Parameters = P;
         end
@@ -15,13 +18,15 @@ classdef SignalGenerator < handle
             %% Composite Analog Signal Generator
             %% ==================================          
             
-            % Time vector
-            Fs = obj.Parameters.getValue("Fs"); 
-            Dur = obj.Parameters.getValue("Dur");
+            % Time vector Parameters
 
+            Fs = obj.Parameters.getValue("Fs"); % Sampling Rate
+            Dur = obj.Parameters.getValue("Dur"); % Signal Duration
+            
+            % Time Vector 
             t = (0:1/Fs:Dur-1/Fs)';
 
-            % Burst part of the information carrying Envelope signal based
+            % Parameters of the information carrying Envelope signal based
             % on gaussian pulses.
             Aburst = obj.Parameters.getValue("Aburst"); % Burst amplitude
             mu = obj.Parameters.getValue("mu");% Peak location of amplitude
@@ -32,11 +37,11 @@ classdef SignalGenerator < handle
             BurstEnvelope = Aburst * exp(-((t - mu).^2) / (2 * Sigma^2));
             Envelope = Ad + BurstEnvelope;
 
-            % Apply exponential decay after EST
-
+            %Exponential Decay Parameters
             Lambda = obj.Parameters.getValue("Lambda"); %Decay constant
             EST = obj.Parameters.getValue("EST"); % Fading start time
-
+             
+            % Apply exponential decay after EST
             fade_idx = t >= EST;
             if any(fade_idx)
                 first_fade_idx = find(fade_idx, 1);
@@ -49,31 +54,31 @@ classdef SignalGenerator < handle
                 % Apply the fading envelope to the signal
                 Envelope(fade_idx) = start_val * FadeEnvelope;
             end
-
-
             
-            % Controlled amplitude-varying test signal
+            % Parameters of the amplitude-varying test signal
             FData = obj.Parameters.getValue("FData"); % Data frequency
 
+            % Controlled amplitude-varying test signal
             DataSignal = sin(2*pi*FData*t).*Envelope;
             
-            % Out-of-Band noise signal.
+            % Out-of-Band noise signal Parameters.
             An = obj.Parameters.getValue("An"); % Unwanted noise amplitude
             Fnoise = obj.Parameters.getValue("Fnoise"); % noise frequency
-
+            
+            % Out-of-Band noise signal 
             NoiseSignal = An * sin(2*pi*Fnoise*t);
             
-            % AWGN generation 
+            % AWGN Parameter
             Anf = obj.Parameters.getValue("Anf"); % Noise floor amplitude
 
-            % Unique random numbers
+            % AWGN generation 
             NoiseFloor = Anf * randn(size(t));
 
-
+            % DC Parameter
+            DC = obj.Parameters.getValue("DC"); % DC Voltage
+            
             % Composite Signal consisting of a DC, data,
             % out-of-band/in-band signal has test input to ADC.
-            DC = obj.Parameters.getValue("DC"); % DC Voltage
-
             Inp_Sig = DC + DataSignal + NoiseSignal + NoiseFloor;  
 
             % Store Internal Signal Components For Testing/Debugging
