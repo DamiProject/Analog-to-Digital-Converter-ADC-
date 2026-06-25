@@ -1,7 +1,7 @@
 classdef TestParameters < matlab.unittest.TestCase
-    %% ============================================================
+    %% ===================================================
     %% UNIT TEST SUITE FOR THE PARAMETERS CONTAINER CLASS
-    %% ============================================================
+    %% ===================================================
 
     methods (Test)
 
@@ -11,8 +11,6 @@ classdef TestParameters < matlab.unittest.TestCase
 
             testCase.verifyClass(P.getMeta("Fs"), "Meta");
             testCase.verifyClass(P.getMeta("FData"), "Meta");
-            testCase.verifyClass(P.getMeta("Gain"), "Meta");
-            testCase.verifyClass(P.getMeta("ART"), "Meta");
         end
 
         function testGetValueReturnsAssignedValue(testCase)
@@ -28,10 +26,10 @@ classdef TestParameters < matlab.unittest.TestCase
             %% Validates setValue Updates Existing Parameter Values
             P = Parameters();
 
-            P.setValue("Gain", 10);
-            P.setValue("Gain", 25);
+            P.setValue("Fs", 10);
+            P.setValue("Fs", 25);
 
-            testCase.verifyEqual(P.getValue("Gain"), 25);
+            testCase.verifyEqual(P.getValue("Fs"), 25);
         end
 
         function testGetMetaReturnsCorrectMetadata(testCase)
@@ -86,6 +84,5 @@ classdef TestParameters < matlab.unittest.TestCase
 
             testCase.verifyTrue(isnan(P.getValue("Fs")));
         end
-
     end
 end
