@@ -1,7 +1,7 @@
 classdef TestADCFilter < matlab.unittest.TestCase
-    %% ==========================================
+    %% =================================
     %% UNIT TEST SUITE FOR FILTER CLASS
-    %% ==========================================
+    %% =================================
 
     methods (Test)
 
@@ -176,6 +176,5 @@ classdef TestADCFilter < matlab.unittest.TestCase
             P.setValue("nHpf", 4); % HPF Filter Order
             P.setValue("nLpf", 6); % LPF Filter Order
         end
-
     end
 end
