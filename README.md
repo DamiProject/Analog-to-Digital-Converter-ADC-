@@ -4,66 +4,71 @@
 
 ## Overview
 
-This project implements a modular Analog-to-Digital Converter (ADC) in MATLAB, converting analog signals (e.g., speech) into digital audio files (e.g., MP3). It explores both **digital signal processing (DSP) paradigms** - including gain-tracking, anti-aliasing filtering, sampling, SNR analysis, and fixed-point precision tradeoffs - and **software engineering paradigms** such as object-oriented programming (OOP), code reusability, and modularity.
+This project implements a modular Analog-to-Digital Converter (ADC) in MATLAB, converting analog signals (e.g., speech) into digital audio files (e.g., WAV). It explores both **digital signal processing (DSP) paradigms**, including gain-tracking, anti-aliasing filtering, sampling, quantization, SNR analysis, and fixed-point precision tradeoffs and **software engineering paradigms** such as object-oriented programming (OOP), code reusability, and modularity.
 
 ---
 
 ## Project Status
 
-### Implemented (Unit Tested)
-- Signal Generator
-- - Automatic Gain Control (AGC)
-  - - Anti-Aliasing Filter
-    - - Sampling Module
+### Unit Tested Implementation
+Signal Generator
+
+Automatic Gain Control (AGC)
+
+Anti-Aliasing Filter
+
+Sampling Module
      
-      - ### Planned / In Progress
-      - - Quantizer Module
-        - - FIR Digital Filter
-          - - Fixed-Point Analysis
-            - - Code Refactoring
-              - - Hardware-Oriented Optimization
+### Planned / In Progress
+Quantizer Module
+
+FIR Digital Filter
+
+Fixed-Point Analysis
+
+Code Refactoring
+
+Hardware-Oriented Optimization
                
-                - ---
+- ---
 
-                ## Repository Structure
+## Repository Structure
+```
+Analog-to-Digital-Converter-ADC-/
+|-- Design/       # Core module implementations
+|-- Test/         # Unit tests for each module
+|-- RunTests.m    # Test runner - executes all unit tests
+```
+ ---
 
-                ```
-                Analog-to-Digital-Converter-ADC-/
-                |-- Design/       # Core module implementations
-                |-- Test/         # Unit tests for each module
-                |-- RunTests.m    # Test runner - executes all unit tests
-                ```
+## Requirements
+MATLAB
 
-                ---
-
-                ## Requirements
-                - **MATLAB** R2021a or later (recommended)
-                - - **Signal Processing Toolbox**
+Signal Processing Toolbox
                  
-                  - ---
+- ---
 
-                  ## How to Run
+## How to Run
 
-                  Clone the repository:
+Clone the repository:
 
-                  ```bash
-                  git clone https://github.com/DamiProject/Analog-to-Digital-Converter-ADC-.git
-                  ```
+```bash
+git clone https://github.com/DamiProject/Analog-to-Digital-Converter-ADC-.git
+```
 
-                  Open MATLAB and navigate to the project root directory.
+Open MATLAB and navigate to the project root directory.
 
-                  Run all unit tests:
+Run all unit tests:
 
-                  ```matlab
-                  RunTests
-                  ```
+```matlab
+RunTests
+```
+Individual modules can be explored and run from the `Design/` folder.
 
-                  Individual modules can be explored and run from the `Design/` folder.
+---
 
-                  ---
+## Author
 
-                  ## Author
+**Damilola Awotunde**
 
-                  **Damilola Awotunde**
-                  MEng, Communications & Signal Processing - Western University
-                  [LinkedIn](https://www.linkedin.com/in/damilola-awotunde) - [GitHub](https://github.com/DamiProject)
+MEng, Communications & Signal Processing - Western University | [LinkedIn](https://www.linkedin.com/in/damilola-awotunde) 
