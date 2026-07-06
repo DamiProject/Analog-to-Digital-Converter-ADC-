@@ -10,19 +10,18 @@ This project implements a modular Analog-to-Digital Converter (ADC) in MATLAB, c
 
 ## Project Status
 
-### Unit Tested Implementation
-Signal Generator
+### Unit Tested Implementations
+Signal Generator Object
 
-Automatic Gain Control (AGC)
+Automatic Gain Control (AGC) Object
 
-Anti-Aliasing Filter
+Anti-Aliasing Filter Object
 
-Sampling Module
      
 ### Planned / In Progress
-Quantizer Module
+Analog-to-Digital Converter ( Sampler + Bipolar Midtread Quantizer) Object
 
-FIR Digital Filter
+FIR Digital Filter Object
 
 Fixed-Point Analysis
 
