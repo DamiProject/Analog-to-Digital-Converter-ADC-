@@ -6,7 +6,7 @@
 
 This project implements a modular Analog-to-Digital Signal Converter (ADC) in MATLAB, converting analog signals (e.g., speech) into digital audio files (e.g., WAV). It explores both **digital signal processing (DSP) paradigms**, including gain-tracking, anti-aliasing filtering, sampling, quantization, SNR analysis, and fixed-point precision tradeoffs and **software engineering paradigms** such as object-oriented programming (OOP), code reusability, and modularity. Figure 1 shows the connecting modules and operation chain of the Analog-to-Digital-Signal Converter.
 
-<img width="2000" height="1000" alt="image" src="https://github.com/user-attachments/assets/42c814f7-81ac-411c-afec-6ec54ebcbcb7" />
+<img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/42c814f7-81ac-411c-afec-6ec54ebcbcb7" />
 
 Figure 1 shows the block diagram of the ADC connecting modules.
 
