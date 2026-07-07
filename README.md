@@ -14,7 +14,8 @@ Figure 1 shows the block diagram of the ADC connecting modules.
 
 ## Project Status
 
-### Unit Tested Implementations
+### Current Implementation
+
 Signal Generator Object
 
 Automatic Gain Control (AGC) Object
@@ -22,7 +23,8 @@ Automatic Gain Control (AGC) Object
 Anti-Aliasing Filter Object
 
      
-### Planned / In Progress
+### Planned Work
+
 Analog-to-Digital Converter ( Sampler + Bipolar Midtread Quantizer) Object
 
 FIR Digital Filter Object
@@ -36,6 +38,7 @@ Hardware-Oriented Optimization
 - ---
 
 ## Repository Structure
+
 ```
 Analog-to-Digital-Converter-ADC-/
 |-- Design/       # Core module implementations
@@ -45,6 +48,7 @@ Analog-to-Digital-Converter-ADC-/
  ---
 
 ## Requirements
+
 MATLAB
 
 Signal Processing Toolbox
