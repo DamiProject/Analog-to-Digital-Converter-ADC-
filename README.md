@@ -4,11 +4,17 @@
 
 ## Overview
 
-This project implements a modular Analog-to-Digital Signal Converter (ADC) in MATLAB, converting analog signals (e.g., speech) into digital audio files (e.g., WAV). It explores both **digital signal processing (DSP) paradigms**, including gain-tracking, anti-aliasing filtering, sampling, quantization, SNR analysis, and fixed-point precision tradeoffs and **software engineering paradigms** such as object-oriented programming (OOP), code reusability, and modularity. Figure 1 shows the connecting modules and operation chain of the Analog-to-Digital-Signal Converter.
+This project implements a modular Analog-to-Digital Signal Converter (ADC) in MATLAB, converting analog signals (e.g., speech) into digital audio files (e.g., WAV). It explores two main areas:
+
+1. **Digital Signal Processing (DSP) Paradigms:** Signal generation, gain-tracking, filtering, sampling, quantization, SNR analysis, and fixed-point precision tradeoffs.
+
+2. **Software Engineering Paradigms:** Object-oriented programming (OOP), code reusability, and modularity.
+
+Figure 1 shows the connecting modules and operation pipeline of the Analog-to-Digital-Signal Conversion.
 
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/42c814f7-81ac-411c-afec-6ec54ebcbcb7" />
 
-Figure 1 shows the block diagram of the ADC connecting modules.
+Figure 1: Complete DSP signal processing pipeline from analog simulation to decimated digital output.
 
 ---
 
@@ -18,14 +24,15 @@ Figure 1 shows the block diagram of the ADC connecting modules.
 
 Signal Generator Object
 
-Automatic Gain Control (AGC) Object
+DC Removal HPF
 
 Anti-Aliasing Filter Object
 
+Automatic Gain Control (AGC) Object
      
 ### Planned Work
 
-Analog-to-Digital Converter ( Sampler + Bipolar Midtread Quantizer) Object
+Analog-to-Digital Converter (Sampler + Bipolar Midtread Quantizer) Object
 
 FIR Digital Filter Object
 
