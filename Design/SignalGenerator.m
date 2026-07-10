@@ -76,6 +76,7 @@ classdef SignalGenerator < handle
 
             % DC Parameter
             DC = obj.Parameters.getValue("DC"); % DC Voltage
+            DC = DC * ones(size(t));
             
             % Composite Signal consisting of a DC, data,
             % out-of-band/in-band signal has test input to ADC.
