@@ -47,13 +47,27 @@ Hardware-Oriented Optimization
 
 **Signal Generator Object:** An instance of this object generates the analog input signal to be converted to digital signal, consisting of a sinusoidal baseband signal (core data) & high - frequency interference signal, DC offset, and AWGN noise floor. Figure 2 shows the time domain and frequency domain of the input signal.
 
+**Key Implementation Features:**
+
+- **Non-Stationary Envelope Generation:** Rather than generating a static, continuous sine wave, the core baseband signal is amplitude-modulated using a custom envelope i.e. a Gaussian pulse followed by an exponential fade.
+
+- **Real-World Transient Simulation:** This envelope creates a dynamic "burst and decay" profile, simulating the transient nature of real-world physical sources (such as human speech). This non-stationary behavior provides the necessary amplitude variance to rigorously test the downstream Automatic Gain Control (AGC) and quantization stages.
+
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/37987861-6749-4416-9b94-00becbbdb8df" />
 
 Figure 2: Time and frequency domain representations of the synthesized noisy analog input signal.
 
 **DC Removal (HPF) Object:** This module generates an instance of an N-order Butterworth High-Pass Filter (HPF) to eliminate unwanted DC bias from the incoming signal. In DSP, DC offsets are not universally detrimental; for example, unipolar quantizers rely on an injected DC offset to lift the analog signal entirely above zero. However, this simulation implements a bipolar mid-tread quantizer, which requires the signal to swing symmetrically across its zero-crossing. In this architecture, a residual DC offset restricts the dynamic range and severely degrades the quantizer's operational accuracy, making this HPF stage critical. A 4<sup>th</sup> order Butterworth HPF was used to remove the DC bias, yielding the centered signal shown in Figure 3.
 
+**Key Implementation Features:**
+
+- **Numerically Robust ZPK Formulation:** To mitigate floating-point inaccuracies and coefficient quantization errors common in higher-order filters, the filter coefficients are mathematically derived using a Zero-Pole-Gain (ZPK) formulation before being converted into the final transfer function polynomials.
+
 **Anti-aliasing Filter (LPF):** This module generates an instance of an N-order Butterworth Low-Pass Filter (LPF) to strictly band-limit the incoming analog signal before it reaches the sampler. According to the Nyquist-Shannon sampling theorem, a system must sample at a rate at least twice the highest frequency present in the signal to prevent distortion. If frequencies exceeding the Nyquist limit ($f_s / 2$) enter the sampler, they "fold" back into the baseband, masquerading as lower frequencies. This phenomenon, known as aliasing, introduces irreversible inharmonic distortion that cannot be mathematically removed post-conversion. By aggressively attenuating the high-frequency interference generated in the input stage with a 6<sup>th</sup> order Butterworth LPF, this LPF guarantees a clean, alias-free conversion, as shown in Figure 3.
+
+**Key Implementation Features:**
+
+- **Numerically Robust ZPK Formulation:** To mitigate floating-point inaccuracies and coefficient quantization errors common in higher-order filters, the filter coefficients are mathematically derived using a Zero-Pole-Gain (ZPK) formulation before being converted into the final transfer function polynomials.
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/3f1b45d8-e47c-4eeb-ba47-b6635ca6a1e1" />
 
@@ -71,9 +85,11 @@ Figure 3: Clean analog signal after removal of DC bias and high-frequency interf
 
 - **Dynamic Thresholding:** Rather than relying on a hardcoded static value, the noise gate threshold is dynamically calculated based on the system's simulated noise floor parameter (Anf). This tightly couples the AGC to the input stage, ensuring the gate remains accurate even if the noise variance changes.
 - **Leaky Integrator Smoothing:** The AGC employs leaky integrators for its attack and release times (Pgt_att and Pgt_rel). This guarantees smooth gain transitions, preventing the abrupt, unnatural "clicking" artifacts that occur when a noise gate opens or closes instantaneously.
-- **Dynamic Headroom Mapping:** The upper and lower gain limits are directly parameterized to the full-scale voltage (Vfs) of the subsequent quantizer stage, ensuring perfect amplitude scaling prior to quantization.
+- **Dynamic Headroom Mapping:** The upper and lower gain limits are directly parameterized to the full-scale voltage (Vfs) of the subsequent quantizer stage, ensuring amplitude scaling prior to quantization.
 
+<img width="1751" height="797" alt="image" src="https://github.com/user-attachments/assets/e60b091c-5913-46fb-b195-786fd76a944b" />
 
+Figure 4: 
 
 
 - ---
