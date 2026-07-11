@@ -67,6 +67,12 @@ Figure 3: Clean analog signal after removal of DC bias and high-frequency interf
 
 - SNR Preservation: By freezing the gain during these periods, the noise gate effectively maximizes the SNR at the output of the quantizer.
 
+**Key Implementation Features:**
+
+- **Dynamic Thresholding:** Rather than relying on a hardcoded static value, the noise gate threshold is dynamically calculated based on the system's simulated noise floor parameter (Anf). This tightly couples the AGC to the input stage, ensuring the gate remains accurate even if the noise variance changes.
+- **Leaky Integrator Smoothing:** The AGC employs leaky integrators for its attack and release times (Pgt_att and Pgt_rel). This guarantees smooth gain transitions, preventing the abrupt, unnatural "clicking" artifacts that occur when a noise gate opens or closes instantaneously.
+- **Dynamic Headroom Mapping:** The upper and lower gain limits are directly parameterized to the full-scale voltage (Vfs) of the subsequent quantizer stage, ensuring perfect amplitude scaling prior to quantization.
+
 
 
 
