@@ -87,9 +87,9 @@ Figure 3: Clean analog signal after removal of DC bias and high-frequency interf
 - **Leaky Integrator Smoothing:** The AGC employs leaky integrators for its attack and release times (Pgt_att and Pgt_rel). This guarantees smooth gain transitions, preventing the abrupt, unnatural "clicking" artifacts that occur when a noise gate opens or closes instantaneously.
 - **Dynamic Headroom Mapping:** The upper and lower gain limits are directly parameterized to the full-scale voltage (Vfs) of the subsequent quantizer stage, ensuring amplitude scaling prior to quantization.
 
-<img width="1751" height="797" alt="image" src="https://github.com/user-attachments/assets/e60b091c-5913-46fb-b195-786fd76a944b" />
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/e60b091c-5913-46fb-b195-786fd76a944b" />
 
-Figure 4: 
+Figure 4: Time-domain response of the AGC, illustrating dynamic amplitude scaling and active noise gating during signal fade.
 
 
 - ---
