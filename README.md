@@ -73,7 +73,7 @@ Figure 2: Time and frequency domain representations of the synthesized noisy ana
 
 Figure 3: Clean analog signal after removal of DC bias and high-frequency interference.
 
-**Time-Varying Automatic Gain Control (AGC) With Noise Gate:** This module applies an AGC to dynamically adjust the gain of the incoming analog signal over time. Its primary function is to maintain the signal's amplitude integrity, ensuring it consistently utilizes the full dynamic range of the subsequent bipolar mid-tread quantizer without clipping. To prevent the system from amplifying the noise floor during quiet periods (such as fading audio), this module also integrates a Noise Gate. The noise gate dictates the AGC's behavior under low Signal-to-Noise Ratio (SNR) conditions:
+**Feedforward Time-Varying Automatic Gain Control (AGC) With Noise Gate:** This module applies an AGC to dynamically adjust the gain of the incoming analog signal over time. Its primary function is to maintain the signal's amplitude integrity, ensuring it consistently utilizes the full dynamic range of the subsequent bipolar mid-tread quantizer without clipping. To prevent the system from amplifying the noise floor during quiet periods (such as fading audio), this module also integrates a Noise Gate. The noise gate dictates the AGC's behavior under low Signal-to-Noise Ratio (SNR) conditions:
 
 - Signal Detection: When the target signal drops below a defined threshold and is barely present amidst the white noise, the gate activates.
 
