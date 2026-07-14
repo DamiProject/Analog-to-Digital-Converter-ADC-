@@ -43,7 +43,7 @@ Code Refactoring
 Hardware-Oriented Optimization
 
 - ---
-## Simulation & System Requirement
+## Current Implementation Demo Simulation & System Requirement
 
 **Signal Generator Object:** An instance of this object generates the analog input signal to be converted to digital signal, consisting of a sinusoidal baseband signal (core data) & high - frequency interference signal, DC offset, and AWGN noise floor. Figure 2 shows the time domain and frequency domain of the input signal.
 
