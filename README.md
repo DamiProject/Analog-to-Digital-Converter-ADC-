@@ -83,9 +83,10 @@ Figure 3: Clean analog signal after removal of DC bias and high-frequency interf
 
 **Key Implementation Features:**
 
+- **Peak Envelope Detector:** Chosen over RMS detection to ensure deterministic quantizer safety. By tracking the true peak rather than energy averages, the system reacts instantaneously to transients, preventing hard-clipping and maintaining high fidelity signal mapping within the quantizer’s full-scale range.
 - **Dynamic Thresholding:** Rather than relying on a hardcoded static value, the noise gate threshold is dynamically calculated based on the system's simulated noise floor parameter (Anf). This tightly couples the AGC to the input stage, ensuring the gate remains accurate even if the noise variance changes.
 - **Leaky Integrator Smoothing:** The AGC employs leaky integrators for its attack and release times (Pgt_att and Pgt_rel). This guarantees smooth gain transitions, preventing the abrupt, unnatural "clicking" artifacts that occur when a noise gate opens or closes instantaneously.
-- **Dynamic Headroom Mapping:** The upper and lower gain limits are directly parameterized to the full-scale voltage (Vfs) of the subsequent quantizer stage, ensuring amplitude scaling prior to quantization.
+- **Dynamic Headroom Mapping:** The upper and lower gain limits are directly parameterized to the full-scale voltage of the subsequent quantizer stage, ensuring amplitude scaling prior to quantization.
 
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/e60b091c-5913-46fb-b195-786fd76a944b" />
 
