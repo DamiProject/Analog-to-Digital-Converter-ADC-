@@ -24,7 +24,7 @@ classdef ADCFilter < handle
             [z_hp, p_hp, k_hp] = butter(nHpf, (2*FcHigh)/Fs,"high");
 
             % Convert ZPK representation to second-order sections.
-            % sos_hpf: Biquad section:
+            % sos_hpf: Biquad section
             % g_hpf: Overall scalar filter gain
             [sos_hpf,g_hpf] = zp2sos(z_hp, p_hp, k_hp);
         end
@@ -40,7 +40,7 @@ classdef ADCFilter < handle
             [z_lp, p_lp, k_lp] = butter(nLpf, (2*FcLow)/Fs,"low");
 
             % Convert ZPK representation to second-order sections.
-            % sos_lpf: Biquad section:
+            % sos_lpf: Biquad section
             % g_lpf: Overall scalar filter gain
             [sos_lpf, g_lpf] = zp2sos(z_lp, p_lp, k_lp);
         end
