@@ -99,12 +99,14 @@ classdef AGC < handle
 
             % Quantizer full-scale Amplitude Parameter
             Vfs = obj.Parameters.getValue("Vfs");
+            % Quantizer Peak Voltage 
+            QuantizerPeak = abs(Vfs) / 2;
             % Headroom Calculation of the Upper output-envelope limit -
             % for AGC control 
-            UpperAGCLimit = 0.75 * abs(Vfs);
+            UpperAGCLimit = 0.75 * QuantizerPeak;
             % Headroom Calculation of the Lower output-envelope limit -
             % for AGC control 
-            LowerAGCLimit = 0.3 * abs(Vfs);
+            LowerAGCLimit = 0.3 * QuantizerPeak;
             
             % Minimum denominator for upper-limit gain calculation
             SafetyFloorHigh = max (eps, UpperAGCLimit *1e-6);
