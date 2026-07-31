@@ -19,7 +19,7 @@ classdef ADC < handle
             Sampler(obj,Input)
             %% ADC SAMPLING 
 
-            %%DF = obj.Parameters.getValue("DF"); % Downsampling Factor
+            DF = obj.Parameters.getValue("DF"); % Downsampling Factor
             Fs = obj.Parameters.getValue("Fs"); % Oversampling Frequency 
 
             Input = Input(:); %Input Signal Into The ADC 
@@ -28,9 +28,9 @@ classdef ADC < handle
             N = numel(Input);
             
             % Operating Sampling Frequency of the ADC
-            ADCSamplingFrequency = Fs; 
+            ADCSamplingFrequency = Fs/DF; 
             % Sample Index of a Discrete Signal 
-            SampleIndex = (1:N)';
+            SampleIndex = (1:DF:N)';
             % Generate Discrete-Time Signal After ADC Sampling
             DiscreteSignal = Input(SampleIndex);
         end
@@ -63,7 +63,7 @@ classdef ADC < handle
             Vfs = obj.Parameters.getValue("Vfs");% full-scale range
             NumBits = obj.Parameters.getValue("NumBits"); % Number of Bits
 
-            Input = Input(:); %Discrete-time input signal
+            Input = Input(:); % Discrete-time input signal
 
             Delta = Vfs/2^NumBits; % Quantization resolution
 
