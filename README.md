@@ -29,10 +29,10 @@ DC Removal (HPF) Object
 Anti-Aliasing Filter Object
 
 Automatic Gain Control (AGC) Object
+
+ADC (Sampler + Bipolar Midtread Quantizer) Object
      
 ### Planned Work
-
-Analog-to-Digital Converter (Sampler + Bipolar Midtread Quantizer) Object
 
 FIR Digital Filter Object
 
@@ -92,7 +92,7 @@ Figure 3: Clean analog signal after removal of DC bias and high-frequency interf
 
 Figure 4: Time-domain response of the AGC, illustrating dynamic amplitude scaling and active noise gating during signal fade.
 
-
+**Analog
 - ---
 
 ## Repository Structure
