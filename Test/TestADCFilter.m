@@ -14,84 +14,75 @@ classdef TestADCFilter < matlab.unittest.TestCase
             testCase.verifySameHandle(F.Parameters, P);
         end
 
-
-        function testDCRemovalReturnsValidCoefficients(testCase)
-            %% Validates HPF Coefficients Are Real, Finite, and Nonempty
-
-            P = testCase.createDefaultParameters();
-            F = ADCFilter(P);
-
-            [b, a] = F.DCRemoval();
-
-            testCase.verifyNotEmpty(b);
-            testCase.verifyNotEmpty(a);
-
-            testCase.verifyTrue(isreal(b));
-            testCase.verifyTrue(isreal(a));
-
-            testCase.verifyTrue(all(isfinite(b)));
-            testCase.verifyTrue(all(isfinite(a)));
-        end
-
-
-        function testAAFReturnsValidCoefficients(testCase)
-            %% Validates LPF Coefficients Are Real, Finite, and Nonempty
+        function testDCRemovalReturnsValidSOS(testCase)
+            %% Validates HPF Returns a Valid SOS Matrix and Scalar Gain
 
             P = testCase.createDefaultParameters();
             F = ADCFilter(P);
 
-            [b, a] = F.AAF();
+            nHpf = P.getValue("nHpf");
+            [sos, g] = F.DCRemoval();
 
-            testCase.verifyNotEmpty(b);
-            testCase.verifyNotEmpty(a);
-
-            testCase.verifyTrue(isreal(b));
-            testCase.verifyTrue(isreal(a));
-
-            testCase.verifyTrue(all(isfinite(b)));
-            testCase.verifyTrue(all(isfinite(a)));
+            testCase.verifyValidSOS(sos, g, nHpf);
         end
 
+        function testAAFReturnsValidSOS(testCase)
+            %% Validates LPF Returns a Valid SOS Matrix and Scalar Gain
+
+            P = testCase.createDefaultParameters();
+            F = ADCFilter(P);
+
+            nLpf = P.getValue("nLpf");
+            [sos, g] = F.AAF();
+
+            testCase.verifyValidSOS(sos, g, nLpf);
+        end
 
         function testDCRemovalMatchesExpectedHighPassButterworth(testCase)
-            %% Validates DCRemoval Design Expected Butterworth HPF
+            %% Validates DCRemoval Designs the Expected Butterworth HPF
 
             P = testCase.createDefaultParameters();
             F = ADCFilter(P);
 
             FcHigh = P.getValue("FcHigh"); % Cutoff Frequency
-            Fs     = P.getValue("Fs"); % Sampling Frequency
-            nHpf   = P.getValue("nHpf"); % Filter Order
+            Fs     = P.getValue("Fs");     % Sampling Frequency
+            nHpf   = P.getValue("nHpf");   % Filter Order
 
-            [bActual, aActual] = F.DCRemoval();
+            [sosActual, gActual] = F.DCRemoval();
 
-            [zExp, pExp, kExp] = butter(nHpf, (2*FcHigh)/Fs, "high");
-            [bExpected, aExpected] = zp2tf(zExp, pExp, kExp);
+            [zExpected, pExpected, kExpected] = ...
+                butter(nHpf, (2 * FcHigh) / Fs, "high");
+            [sosExpected, gExpected] = ...
+                zp2sos(zExpected, pExpected, kExpected);
 
-            testCase.verifyEqual(bActual, bExpected, "AbsTol", 1e-12);
-            testCase.verifyEqual(aActual, aExpected, "AbsTol", 1e-12);
+            testCase.verifyEqual( ...
+                sosActual, sosExpected, "AbsTol", 1e-12);
+            testCase.verifyEqual( ...
+                gActual, gExpected, "AbsTol", 1e-12);
         end
 
-
         function testAAFMatchesExpectedLowPassButterworth(testCase)
-            %% Validates AAF Design Expected Butterworth LPF
+            %% Validates AAF Designs the Expected Butterworth LPF
 
             P = testCase.createDefaultParameters();
             F = ADCFilter(P);
 
             FcLow = P.getValue("FcLow"); % Cutoff Frequency
-            Fs    = P.getValue("Fs"); % Sampling Rate
-            nLpf  = P.getValue("nLpf"); % Filter Order
+            Fs    = P.getValue("Fs");    % Sampling Frequency
+            nLpf  = P.getValue("nLpf");  % Filter Order
 
-            [bActual, aActual] = F.AAF();
+            [sosActual, gActual] = F.AAF();
 
-            [zExp, pExp, kExp] = butter(nLpf, (2*FcLow)/Fs, "low");
-            [bExpected, aExpected] = zp2tf(zExp, pExp, kExp);
+            [zExpected, pExpected, kExpected] = ...
+                butter(nLpf, (2 * FcLow) / Fs, "low");
+            [sosExpected, gExpected] = ...
+                zp2sos(zExpected, pExpected, kExpected);
 
-            testCase.verifyEqual(bActual, bExpected, "AbsTol", 1e-12);
-            testCase.verifyEqual(aActual, aExpected, "AbsTol", 1e-12);
+            testCase.verifyEqual( ...
+                sosActual, sosExpected, "AbsTol", 1e-12);
+            testCase.verifyEqual( ...
+                gActual, gExpected, "AbsTol", 1e-12);
         end
-
 
         function testDCRemovalBehavesAsHighPass(testCase)
             %% Validates HPF Rejects DC and Passes High Frequency
@@ -99,65 +90,94 @@ classdef TestADCFilter < matlab.unittest.TestCase
             P = testCase.createDefaultParameters();
             F = ADCFilter(P);
 
-            [b, a] = F.DCRemoval();
-            
-            % Evaluate frequency response at DC and near Nyquist
-            %Frequency Response
-            H = freqz(b, a, [0, pi]);
+            [sos, g] = F.DCRemoval();
 
-            H_dc = H(1);   % Response at DC
-            H_high = H(2);  % Response near Nyquist
+            % Evaluate the complete SOS cascade, including overall gain,
+            % at DC and the Nyquist frequency.
+            H = g .* freqz(sos, [0, pi]);
 
-            testCase.verifyLessThan(abs(H_dc), 1e-6);
-            testCase.verifyGreaterThan(abs(H_high), 0.7);
+            Hdc   = H(1);
+            Hhigh = H(2);
+
+            testCase.verifyLessThan(abs(Hdc), 1e-6);
+            testCase.verifyGreaterThan(abs(Hhigh), 0.7);
         end
-
 
         function testAAFBehavesAsLowPass(testCase)
-        %% Validates AAF Passes DC/Low Frequency and Rejects High Frequency
+            %% Validates AAF Passes DC and Rejects High Frequency
 
             P = testCase.createDefaultParameters();
             F = ADCFilter(P);
 
-            [b, a] = F.AAF();
+            [sos, g] = F.AAF();
 
+            % Evaluate the complete SOS cascade, including overall gain,
+            % at DC and the Nyquist frequency.
+            H = g .* freqz(sos, [0, pi]);
 
-            % Evaluate frequency response at DC and near Nyquist
-            % Frequency Response 
-            H = freqz(b, a, [0, pi]);
+            Hdc   = H(1);
+            Hhigh = H(2);
 
-            H_dc = H(1);   % Response at DC
-            H_high = H(2);  % Response near Nyquist
-
-
-            testCase.verifyGreaterThan(abs(H_dc), 0.7);
-            testCase.verifyLessThan(abs(H_high), 1e-3);
+            testCase.verifyGreaterThan(abs(Hdc), 0.7);
+            testCase.verifyLessThan(abs(Hhigh), 1e-3);
         end
 
-
-        function testDCRemovalFilterIsStable(testCase)
-            %% Validates HPF Poles Are Inside Unit Circle
+        function testDCRemovalHasButterworthCutoffResponse(testCase)
+            %% Validates HPF Magnitude Is Approximately -3 dB at Cutoff
 
             P = testCase.createDefaultParameters();
             F = ADCFilter(P);
 
-            [~, a] = F.DCRemoval();
+            FcHigh = P.getValue("FcHigh");
+            Fs     = P.getValue("Fs");
 
-            poles = roots(a);
+            [sos, g] = F.DCRemoval();
+
+            cutoffFrequency = 2 * pi * FcHigh / Fs;
+            Hcutoff = g .* freqz(sos, [cutoffFrequency, pi]);
+
+            testCase.verifyEqual( ...
+                abs(Hcutoff(1)), 1 / sqrt(2), "AbsTol", 1e-6);
+        end
+
+        function testAAFHasButterworthCutoffResponse(testCase)
+            %% Validates LPF Magnitude Is Approximately -3 dB at Cutoff
+
+            P = testCase.createDefaultParameters();
+            F = ADCFilter(P);
+
+            FcLow = P.getValue("FcLow");
+            Fs    = P.getValue("Fs");
+
+            [sos, g] = F.AAF();
+
+            cutoffFrequency = 2 * pi * FcLow / Fs;
+            Hcutoff = g .* freqz(sos, [cutoffFrequency, pi]);
+
+            testCase.verifyEqual( ...
+                abs(Hcutoff(1)), 1 / sqrt(2), "AbsTol", 1e-6);
+        end
+
+        function testDCRemovalFilterIsStable(testCase)
+            %% Validates All HPF Poles Are Inside the Unit Circle
+
+            P = testCase.createDefaultParameters();
+            F = ADCFilter(P);
+
+            [sos, g] = F.DCRemoval();
+            [~, poles, ~] = sos2zp(sos, g);
 
             testCase.verifyLessThan(abs(poles), ones(size(poles)));
         end
 
-
         function testAAFFilterIsStable(testCase)
-            %% Validates LPF Poles Are Inside Unit Circle
+            %% Validates All LPF Poles Are Inside the Unit Circle
 
             P = testCase.createDefaultParameters();
             F = ADCFilter(P);
 
-            [~, a] = F.AAF();
-
-            poles = roots(a);
+            [sos, g] = F.AAF();
+            [~, poles, ~] = sos2zp(sos, g);
 
             testCase.verifyLessThan(abs(poles), ones(size(poles)));
         end
@@ -165,16 +185,36 @@ classdef TestADCFilter < matlab.unittest.TestCase
 
     methods (Access = private)
 
+        function verifyValidSOS(testCase, sos, g, filterOrder)
+            %% Validates the Structure and Numeric Integrity of SOS Outputs
+
+            expectedSections = ceil(filterOrder / 2);
+
+            testCase.verifySize(sos, [expectedSections, 6]);
+            testCase.verifyEqual( ...
+                sos(:, 4), ones(expectedSections, 1), ...
+                "AbsTol", 1e-12);
+
+            testCase.verifyNotEmpty(sos);
+            testCase.verifyTrue(isreal(sos));
+            testCase.verifyTrue(all(isfinite(sos(:))));
+
+            testCase.verifySize(g, [1, 1]);
+            testCase.verifyTrue(isnumeric(g));
+            testCase.verifyTrue(isreal(g));
+            testCase.verifyTrue(isfinite(g));
+        end
+
         function P = createDefaultParameters(~)
-            %% Creates Default Parameter Object For Filter Tests
+            %% Creates Default Parameter Object for Filter Tests
 
             P = Parameters();
 
-            P.setValue("Fs", 20000); % Sampling Rate
-            P.setValue("FcHigh", 20); % HPF Cutoff Frequency
-            P.setValue("FcLow", 5000); % LPF Cutoff Frequency
-            P.setValue("nHpf", 4); % HPF Filter Order
-            P.setValue("nLpf", 6); % LPF Filter Order
+            P.setValue("Fs", 20000);     % Sampling Frequency
+            P.setValue("FcHigh", 20);    % HPF Cutoff Frequency
+            P.setValue("FcLow", 5000);   % LPF Cutoff Frequency
+            P.setValue("nHpf", 4);       % HPF Filter Order
+            P.setValue("nLpf", 6);       % LPF Filter Order
         end
     end
 end
