@@ -13,7 +13,7 @@ classdef ADCFilter < handle
             obj.Parameters = P;
         end
 
-        function [b_hpf,a_hpf] = DCRemoval(obj)
+        function [sos_hpf, g_hpf] = DCRemoval(obj)
 
             %% Performs DC offset Removal using High-Pass Filter.
             FcHigh = obj.Parameters.getValue("FcHigh"); %Cutoff Frequency
@@ -23,13 +23,13 @@ classdef ADCFilter < handle
             % Butterworth filter design in Zero-Pole-Gain (ZPK) form.
             [z_hp, p_hp, k_hp] = butter(nHpf, (2*FcHigh)/Fs,"high");
 
-            % Convert ZPK to transfer function polynomial coefficients
-            % b_hpf: Numerator (Feedforward coefficients applied to input)
-            % a_hpf: Denominator (Feedback coefficients applied to output)
-            [b_hpf,a_hpf] = zp2tf(z_hp, p_hp, k_hp);
+            % Convert ZPK representation to second-order sections.
+            % sos_hpf: Biquad section:
+            % g_hpf: Overall scalar filter gain
+            [sos_hpf,g_hpf] = zp2sos(z_hp, p_hp, k_hp);
         end
 
-        function [b_lpf,a_lpf] = AAF(obj)
+        function [sos_lpf, g_lpf] = AAF(obj)
 
             %% Performs high frequency noise and aliasing removal.
             FcLow = obj.Parameters.getValue("FcLow"); % Cutoff Frequency
@@ -39,10 +39,10 @@ classdef ADCFilter < handle
             % Butterworth filter design in Zero-Pole-Gain (ZPK) form.
             [z_lp, p_lp, k_lp] = butter(nLpf, (2*FcLow)/Fs,"low");
 
-            % Convert ZPK to transfer function polynomial coefficients
-            % b_lpf: Numerator (Feedforward coefficients applied to input)
-            % a_lpf: Denominator (Feedback coefficients applied to output)
-            [b_lpf,a_lpf] = zp2tf(z_lp, p_lp, k_lp);
+            % Convert ZPK representation to second-order sections.
+            % sos_lpf: Biquad section:
+            % g_lpf: Overall scalar filter gain
+            [sos_lpf, g_lpf] = zp2sos(z_lp, p_lp, k_lp);
         end
     end
 end
