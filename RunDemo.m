@@ -92,11 +92,11 @@ xlim([0 Fs/2 + 1000]);
 
 F = ADCFilter(P);
 
-[b_hpf, a_hpf] = F.DCRemoval();
-x_hpf = filter(b_hpf, a_hpf, Inp_Sig);
+[sos_hpf, g_hpf] = F.DCRemoval();
+x_hpf = g_hpf * sosfilt(sos_hpf, Inp_Sig);
 
-[b_lpf, a_lpf] = F.AAF();
-x_lpf = filter(b_lpf, a_lpf, x_hpf);
+[sos_lpf, g_lpf] = F.AAF();
+x_lpf = g_lpf * sosfilt(sos_lpf, x_hpf);
 
 [f_raw, X_raw] = singleSidedFFT(Inp_Sig, Fs);
 [f_hpf, X_hpf] = singleSidedFFT(x_hpf, Fs);
@@ -134,7 +134,6 @@ legend("After HPF + LPF");
 ylim([0 0.5]);
 xlim([0 Fs/2 + 1000]);
 grid on;
-
 
 %% ============================================================
 %% 4. AGC ON FILTERED SIGNAL
@@ -180,13 +179,6 @@ grid on;
 title("Noise Gate Gain History");
 xlabel("Time (s)");
 ylabel("Gate Gain");
-
-
-
-
-
-
-
 
 %% ======================
 %% LOCAL HELPER FUNCTION
