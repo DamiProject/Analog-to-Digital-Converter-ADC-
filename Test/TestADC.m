@@ -14,29 +14,38 @@ classdef TestADC < matlab.unittest.TestCase
             testCase.verifySameHandle(A.Parameters, P);
         end
 
-        function testSamplerReturnsInputAtADCSamplingRate(testCase)
-            %% Validates ADC Sampling Retains Input Samples at Fs
-
+        function testSamplerDownsamplesToADCRate(testCase)
+            %% Validates ADC Sampling Selects Samples at Fs/DF
             P = testCase.createDefaultParameters();
             A = ADC(P);
 
-            Fs = P.getValue("Fs");
-            N = 12;
+            Fs = P.getValue("Fs");  % High-rate simulation frequency
+            DF = P.getValue("DF");  % ADC sampling factor
+
+            N = 13;
 
             % Row-vector input also validates column-vector conversion.
-            x = 1:N;
+            x = 10 * (1:N);
 
             [y, SampleIndex, ADCSamplingFrequency] = A.Sampler(x);
 
-            expectedOutput = (1:N)';
-            expectedIndex = (1:N)';
+            expectedIndex = (1:DF:N)';
 
-            testCase.verifySize(y, [N 1]);
-            testCase.verifySize(SampleIndex, [N 1]);
+            expectedOutput = x(expectedIndex);
+            expectedOutput = expectedOutput(:);
+
+            expectedADCSamplingFrequency = Fs / DF;
+
+            testCase.verifySize(y, [numel(expectedIndex), 1]);
+            testCase.verifySize( ...
+            SampleIndex, [numel(expectedIndex), 1]);
 
             testCase.verifyEqual(y, expectedOutput);
             testCase.verifyEqual(SampleIndex, expectedIndex);
-            testCase.verifyEqual(ADCSamplingFrequency, Fs);
+
+            testCase.verifyEqual( ...
+            ADCSamplingFrequency, ...
+            expectedADCSamplingFrequency);
         end
 
         function testMidtreadUsesCompleteCodebook(testCase)
@@ -281,11 +290,13 @@ classdef TestADC < matlab.unittest.TestCase
             P.setValue("Fs", 48000);
             P.setValue("Vfs", 8.0);
             P.setValue("NumBits", 3);
+            P.setValue("DF", 4);
 
             % Confirm required parameters are valid and readable.
             testCase.verifyEqual(P.getValue("Fs"), 48000);
             testCase.verifyEqual(P.getValue("Vfs"), 8.0);
             testCase.verifyEqual(P.getValue("NumBits"), 3);
+            testCase.verifyEqual(P.getValue("DF"), 4);
         end
     end
 end
