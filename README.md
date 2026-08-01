@@ -1,5 +1,7 @@
 # Analog-to-Digital Signal Converter (ADC)
 
+[![ADC Unit Tests](https://github.com/DamiProject/Analog-to-Digital-Converter-ADC-/actions/workflows/ADC-tests.yml/badge.svg?branch=development-branch)](https://github.com/DamiProject/Analog-to-Digital-Converter-ADC-/actions/workflows/ADC-tests.yml)
+
 **Status: Under Active Development**
 
 ## Overview
