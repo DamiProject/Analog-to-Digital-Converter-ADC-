@@ -9,3 +9,6 @@ addpath(fullfile(projectRoot, "Test"));
 
 results = runtests(fullfile(projectRoot, "Test"));
 disp(results);
+
+% Throw an error if any unit test fails.
+assertSuccess(results);
