@@ -6,7 +6,7 @@
 
 ## Overview
 
-This project implements an end-to-end modular Analog-to-Digital Signal Converter (ADC) pipeline in MATLAB, converting analog signals (e.g., speech) into digital signals (e.g., WAV) and signal conditioning. It explores two main areas:
+This project implements and validates an end-to-end Analog-to-Digital Converter (ADC) pipeline in MATLAB. The pipeline models front-end signal generation and conditioning, anti-alias filtering, automatic gain control, sampling, bipolar quantization, digital code generation, and conversion-performance analysis. It explores two main areas:
 
 1. **Digital Signal Processing (DSP) Paradigms:** Signal generation, filtering, automatic gain control, sampling, quantization, fixed-point implementation, and spectral analysis.
 
@@ -61,14 +61,14 @@ Figure 1: Complete DSP signal processing pipeline from analog simulation to deci
 
 - **Numerically Robust ZPK Formulation:** To prevent numerical instability and floating-point roundoff errors common in high-order filter calculations, the coefficients are mathematically derived using a cascaded second-order section (SoS) Zero-Pole-Gain (ZPK) formulation.
 
-**3. Anti-Aliasing Filter (LPF):** This module generates an instance of an N-order Butterworth Low-Pass Filter (LPF) to strictly band-limit the incoming analog signal before it reaches the sampler. According to the Nyquist-Shannon sampling theorem, a system must sample at a rate at least twice the highest frequency present in the signal to prevent distortion. If frequencies exceeding the Nyquist limit ($f_s / 2$) enter the sampler, they "fold" back into the baseband, masquerading as lower frequencies. This phenomenon, known as aliasing, introduces irreversible inharmonic distortion that cannot be mathematically removed post-conversion.
+**3. Anti-Aliasing Filter (LPF):** This module generates an instance of an N-order Butterworth Low-Pass Filter (LPF) to band-limit the incoming analog signal before it reaches the sampler. According to the Nyquist-Shannon sampling theorem, a system must sample at a rate at least twice the highest frequency present in the signal to prevent distortion. If frequencies exceeding the Nyquist limit ($f_s / 2$) enter the sampler, they "fold" back into the baseband, masquerading as lower frequencies. This phenomenon, known as aliasing, introduces irreversible inharmonic distortion that cannot be mathematically removed post-conversion.
 
 **Key Implementation Features:**
 
 - **Numerically Robust ZPK Formulation:** Just like the DC removal stage, to prevent numerical instability and floating-point roundoff errors common in high-order filter calculations, the coefficients are mathematically derived using a cascaded second-order section (SoS) Zero-Pole-Gain (ZPK) formulation.
-- **Oversampled Operation:**  By operating at an oversampled rate relative to a target signal's bandwidth, the transition band leading up to the Nyquist limit ($f_s / 2$) is significantly widened. This eliminates the need for an aggressive, high-order "brick-wall" filter with a steep cutoff, reducing filter complexity, computational load, and in-band phase distortion while maintaining anti-aliasing protection.
+- **Oversampling Operation:**  By operating at an oversampled rate relative to a target signal's bandwidth, the transition band leading up to the Nyquist limit ($f_s / 2$) is significantly widened. This eliminates the need for an aggressive, high-order "brick-wall" filter with a steep cutoff, reducing filter complexity, computational load, and in-band phase distortion while maintaining anti-aliasing protection.
 
-**4. Feedforward Time-Varying Automatic Gain Control (AGC) With Noise Gate:** This module generates an AGC instance to dynamically adjust the gain of the incoming analog signal over time. Its primary function is to maintain the signal's amplitude integrity, ensuring it consistently utilizes the full dynamic range of the subsequent bipolar midtread quantizer without clipping. To prevent the system from amplifying the noise floor during quiet periods (such as fading audio), the module integrates a Noise Gate. The noise gate dictates the AGC's behavior under low Signal-to-Noise Ratio (SNR) conditions:
+**4. Feedforward Time-Varying Automatic Gain Control (AGC) With Noise Gate:** This module generates an AGC instance to dynamically adjust the gain of the incoming analog signal over time. Its primary function is to drive the conditioned waveform toward a defined operating region within the bipolar midtread quantizer’s full-scale range. This improves dynamic-range utilization while reducing the likelihood of quantizer clipping and saturation. To prevent the system from amplifying the noise floor during quiet periods (such as a fading audio message), the module integrates a Noise Gate. The noise gate dictates the AGC's behavior under low Signal-to-Noise Ratio (SNR) conditions:
 
 - **Signal Detection:** When the target signal drops below a defined threshold and is barely present amidst the white noise, the gate activates.
 
@@ -76,8 +76,8 @@ Figure 1: Complete DSP signal processing pipeline from analog simulation to deci
 
 **Key Implementation Features:**
 
-- **Peak Envelope Detector:** Chosen over RMS detection to ensure deterministic quantizer safety. By tracking the true peak rather than energy averages, the system reacts to sudden transients faster, preventing hard-clipping and maintaining high fidelity signal mapping within the quantizer’s dynamic range.
-- **Dynamic Thresholding:** Rather than relying on a hardcoded static value, the noise gate threshold is dynamically calculated based on the system's simulated noise floor parameter. This tightly couples the AGC to the input stage, ensuring the gate remains accurate even if the noise variance changes.
+- **Smoothed Peak Envelope Detector:** The AGC uses an absolute-value envelope detector with independent leaky integrator attack and release smoothing. Compared with RMS-based level detection, this structure responds more directly to extreme amplitude transients and allows the gain controller to preserve quantizer headroom while avoiding abrupt gain changes.
+- **Dynamic Thresholding:** Rather than using a hardcoded gate threshold, the model derives it from the configured AWGN standard deviation. This keeps the noise gate operating point consistent with the noise level selected for each simulation scenario.
 - **Leaky Integrator Smoothing:** The AGC utilizes leaky integrators for envelope detection and gain application. This ensures smooth transitions during signal conditioning and prevents the abrupt, unnatural "clicking" artifacts that can occur when a noise gate opens or closes.
 - **Dynamic Headroom Mapping:** The upper and lower gain limits are parameterized to 75% and 30% of the subsequent quantizer stage's peak voltage, respectively, ensuring improved gain scaling prior to quantization.
   
@@ -116,13 +116,13 @@ As shown in Figure 3, the HPF and LPF successfully attenuated the DC offset and 
 
 Unlike the filtering stage, signal conditioning for the 500 Hz baseband data signal was designed around these defined system specifications:
 
-1. The time-varying AGC must avoid amplifying AWGN variance whenever noise power exceeds the data signal level.
+1.The time-varying AGC must suspend gain adjustment when the smoothed input envelope falls below the noise gate threshold derived from the configured AWGN standard deviation.
 2. The time-varying AGC should preserve the non-stationary amplitude dynamics of the data signal rather than forcing it to a constant target level.
 3. Signal amplitude must be scaled to stay within the quantizer's full-scale dynamic range to prevent clipping and saturation.
 
 Because of these specifications, these design choices were made:
 
-1. Introduction of a noise gate which freezes the AGC gain update once it detects noise power exceeds the data signal level. Also to avoid introducing noise pumping, a leaky integrator is used to control its gate opening and closing when controlling the AGC gain update.
+1. A noise gate freezes AGC gain updates when the smoothed input envelope falls below the configured threshold. Independent leaky integrator attack and release smoothing, controls gate opening and closing, reducing abrupt transitions and limiting noise pumping during low-level signal intervals.
 2. To preserve the non-stationary amplitude dynamics of the data signal, the AGC evaluates three distinct operational regions relative to the bipolar midtread quantizer's peak voltage:
    
    **a. Below 30% Peak:** The AGC applies leaky integrator gain boost to effectively utilize the quantizer's dynamic range.
@@ -137,7 +137,7 @@ Figure 4: Dynamic signal conditioning showing envelope tracking, dual-limit AGC 
 
 #### Benchmark
 
-As shown in Figure 4, all signal conditioning objectives were achieved. Furthermore, zero out-of-range samples were recorded during quantization, confirming that the AGC effectively scales the 500 Hz baseband data signal to maximize the dynamic range of the bipolar midtread quantizer without saturation.
+As shown in Figure 4, for the demonstrated signal and parameter configuration, zero out-of-range samples were observed. This result verifies that the AGC kept the conditioned waveform within the configured full-scale range throughout the simulation without causing quantizer saturation.
 
 ### ADC Sampling & Quantization Operation
 
