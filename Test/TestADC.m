@@ -87,7 +87,7 @@ classdef TestADC < matlab.unittest.TestCase
             testCase.verifyTrue(any(abs(y) < 1e-12));
         end
 
-        function testMidtreadRangeMatchesTwosComplementCoding(testCase)
+        function testMidtreadHasAsymmetricEndpointLevels(testCase)
             %% Validates Asymmetric Midtread Endpoints for N-Bit Coding
 
             P = testCase.createDefaultParameters();
