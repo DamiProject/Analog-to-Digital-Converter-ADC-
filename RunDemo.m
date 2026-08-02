@@ -26,7 +26,7 @@ P.setValue("Dur", 0.20);       % Signal duration, seconds
 P.setValue("FData", 500);      % Desired data signal frequency, Hz
 
 % ADC sampling / quantization
-P.setValue("DF", 4);            % Downsampling factor: 20 kHz -> 5 kHz ADC rate
+P.setValue("DF", 4);            % Downsampling factor
 P.setValue("NumBits", 8);       % ADC resolution, bits
 
 % Time-varying envelope
@@ -368,8 +368,8 @@ OutOfRangeSamples = nnz(DiscreteSignal < -QuantizerPeak | ...
 MidtreadRMSError = sqrt(mean(MidtreadError.^2));
 
 SignalPower = mean(DiscreteSignal.^2);
-NoisePower  = mean(MidtreadError.^2);
-SQNR_dB     = 10*log10(SignalPower / NoisePower);
+NoisePower  =  (mean(MidtreadError.^2));
+SQNR_dB     = 10 * log10 (SignalPower / NoisePower);
 
 Correlation = corrcoef(DiscreteSignal, MidtreadSignal);
 CorrelationCoefficient = Correlation(1,2);
@@ -387,11 +387,11 @@ fprintf("Quantization step size:          %.6f V\n", Delta);
 fprintf("Oversampled / ADC sample count:  %d / %d\n", ...
     numel(y_frontend), numel(DiscreteSignal));
 fprintf("Out-of-range input samples:      %d\n", OutOfRangeSamples);
-fprintf("Midtread RMS error:              %.6e V\n", ...
+fprintf("RMS Quantization error:          %.6e V\n", ...
     MidtreadRMSError);
 fprintf("Signal Power:                    %.6e V%s\n", ...
     SignalPower, SquaredSymbol);
-fprintf("Noise Power:                     %.6e V%s\n", ...
+fprintf("Quantization Noise Power:        %.6e V%s\n", ...
     NoisePower, SquaredSymbol);
 fprintf("SQNR:                            %.2f dB\n", ...
     SQNR_dB);
