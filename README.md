@@ -45,7 +45,7 @@ Figure 1: Complete DSP signal processing pipeline from analog simulation to deci
 - Hardware-Oriented Optimization
 
 ---
-## Current Implementation & Demo Simulation
+## Current Module Implementations
 
  **1. Signal Generator Object:** This module generates an instance of the analog input signal to be digitized, consisting of a sinusoidal baseband signal (core data), high-frequency interference signal, DC offset, and AWGN noise floor.
 
