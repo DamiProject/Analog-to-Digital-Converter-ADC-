@@ -116,13 +116,13 @@ As shown in Figure 3, the HPF and LPF successfully attenuated the DC offset and 
 
 Unlike the filtering stage, signal conditioning for the 500 Hz baseband data signal was designed around these defined system specifications:
 
-1.The time-varying AGC must suspend gain adjustment when the smoothed input envelope falls below the noise gate threshold derived from the configured AWGN standard deviation.
+1. The time-varying AGC must suspend gain adjustment when the smoothed input envelope falls below the noise gate threshold derived from the configured AWGN standard deviation.
 2. The time-varying AGC should preserve the non-stationary amplitude dynamics of the data signal rather than forcing it to a constant target level.
 3. Signal amplitude must be scaled to stay within the quantizer's full-scale dynamic range to prevent clipping and saturation.
 
 Because of these specifications, these design choices were made:
 
-1. A noise gate freezes AGC gain updates when the smoothed input envelope falls below the configured threshold. Independent leaky integrator attack and release smoothing, controls gate opening and closing, reducing abrupt transitions and limiting noise pumping during low-level signal intervals.
+1. A noise gate freezes AGC gain updates when the smoothed input envelope falls below the configured threshold. Independent leaky integrator attack and release smoothing controls gate opening and closing, reducing abrupt transitions and limiting noise pumping during low-level signal intervals.
 2. To preserve the non-stationary amplitude dynamics of the data signal, the AGC evaluates three distinct operational regions relative to the bipolar midtread quantizer's peak voltage:
    
    **a. Below 30% Peak:** The AGC applies leaky integrator gain boost to effectively utilize the quantizer's dynamic range.
