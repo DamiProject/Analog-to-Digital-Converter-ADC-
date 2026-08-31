@@ -1,0 +1,35 @@
+name: ADC Unit Tests
+
+on:
+  push:
+    branches:
+      - development-branch
+
+  pull_request:
+    branches:
+      - development-branch
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run ADC Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: latest
+          products: Signal_Processing_Toolbox
+
+      - name: Run ADC project unit tests
+        uses: matlab-actions/run-command@v3
+        with:
+          command: RunTests

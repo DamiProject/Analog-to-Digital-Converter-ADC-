@@ -1,9 +1,10 @@
 # Autosave files
 *.asv
-*.m~
+*~
 *.autosave
 *.slx.r*
 *.mdl.r*
+desktop.ini
 
 # Derived content-obscured files
 *.p
